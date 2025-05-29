@@ -25,8 +25,8 @@ def bereinigen(df: pd.DataFrame, spalte: str, save_path: str = None) -> pd.DataF
     mittelwert = df['mit_nan'].mean().__round__(3)
     median = df['mit_nan'].median()
     linear = df['mit_nan'].interpolate(method='linear').round(3)
-    ffill = df['mit_nan'].fillna(method='ffill')
-    bfill = df['mit_nan'].fillna(method='bfill')
+    ffill = df['mit_nan'].ffill()
+    bfill = df['mit_nan'].bfill()
 
     df['Mittelwert'] = ""
     df['Median'] = ""
@@ -60,7 +60,7 @@ def bereinigen(df: pd.DataFrame, spalte: str, save_path: str = None) -> pd.DataF
     return rückgabe_df
 
 
-df = pd.read_csv("Datenbereinigung/data/daten2.txt", sep=";")
+df = pd.read_csv("data/daten2.txt", sep=";")
 df['MESS_DATUM'] = pd.to_datetime(df['MESS_DATUM'].astype(str), format="%Y%m%d%H")
 
 temp_df = bereinigen(df, 'TT_TER', save_path="temp.csv")
@@ -69,6 +69,6 @@ hum_df = bereinigen(df, 'RF_TER', save_path="hum.csv")
 df['TT_TER_bereinigt'] = temp_df['Inter_Linear'].combine_first(temp_df['mit_nan'])
 df['RF_TER_bereinigt'] = hum_df['Inter_Linear'].combine_first(hum_df['mit_nan'])
 
-export_df = df[['STATIONS_ID', 'MESS_DATUM', 'QN_4', 'TT_TER_bereinigt', 'RF_TER_bereinigt', 'eor']]
-export_df.columns = ['STATIONS_ID', 'MESS_DATUM', 'QN_4', 'TT_TER', 'RF_TER', 'eor']
+export_df = df[['STATIONS_ID', 'MESS_DATUM', 'QN_4', 'TT_TER_bereinigt', 'RF_TER_bereinigt']]
+export_df.columns = ['STATIONS_ID', 'MESS_DATUM', 'QN_4', 'TT_TER', 'RF_TER']
 export_df.to_csv("bereinigte_werte.csv", index=False, sep=';')
